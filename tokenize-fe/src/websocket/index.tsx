@@ -17,5 +17,9 @@ socket.on("disconnect", (reason) => {
     }
 });
 
+socket.on("error", (error) => {
+    console.log("error websocket", error);
+});
+
 const SocketContext = React.createContext(socket);
 export { socket, SocketContext };

@@ -6,17 +6,23 @@ import { listRouter } from "router";
 import { Server } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { SocketManager } from "websocket";
+import { WebSocket } from "ws";
+
+const PORT = 8080;
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-const PORT = 8000;
+
+const SYMBOL = "ethbtc";
+const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${SYMBOL}@bookTicker`);
 
 class Application {
     constructor(
         private app: Express,
         private server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
-        private io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+        private io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
+        private ws: WebSocket
     ) {
         this.initialize();
     }
@@ -34,15 +40,16 @@ class Application {
         });
     }
 
-    private startWebsocket() {
-        const socketManger = new SocketManager(this.io);
+    private loadWebsocket() {
+        const socketManger = new SocketManager(this.io, this.ws);
         socketManger.load();
     }
 
+    // start function
     public async start() {
         try {
             this.connectRouter(listRouter);
-            this.startWebsocket();
+            this.loadWebsocket();
             this.server.listen(PORT, () => {
                 console.log(`listening on *:${PORT}`);
             });
@@ -52,5 +59,5 @@ class Application {
     }
 }
 
-const application = new Application(app, server, io);
+const application = new Application(app, server, io, ws);
 application.start();

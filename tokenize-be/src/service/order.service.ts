@@ -13,12 +13,29 @@ const MARKET_PRICE_URL = (symbol: string) => `https://api.binance.com/api/v3/dep
 
 class OrderService {
     /**
-     * generate simulate exchange order data
+     * generate exchange order data by call API
      * @param listSize size of list
      * @returns
      */
     public async generateListOrders(listSize: number) {
-        const bestOrder = await this.getBestOrder(SYMBOL);
+        const bestOrder = await this.getBestOrderByAPI(SYMBOL);
+        const bidOrders = this.generateBidOrders(bestOrder.bids, listSize);
+        const askOrders = this.generateAskOrders(bestOrder.asks, listSize);
+        const listOrder: OrderData = {
+            asks: askOrders,
+            bids: bidOrders,
+        };
+        return listOrder;
+    }
+
+    /**
+     * generate exchange order data from binance's stream data
+     * @param data : string data from stream
+     * @param listSize
+     * @returns
+     */
+    public generateListOrdersByStream(data: string, listSize: number) {
+        const bestOrder = this.getBestOrderFromStreamData(data);
         const bidOrders = this.generateBidOrders(bestOrder.bids, listSize);
         const askOrders = this.generateAskOrders(bestOrder.asks, listSize);
         const listOrder: OrderData = {
@@ -97,11 +114,11 @@ class OrderService {
     }
 
     /**
-     * get best order from real market (Binance)
+     * get best order from real market (Binance) from call API
      * @param symbol
      * @returns
      */
-    private async getBestOrder(symbol: string) {
+    private async getBestOrderByAPI(symbol: string) {
         const response = await axios.get(MARKET_PRICE_URL(symbol));
         const bestBid: Order = {
             id: uuidv4(),
@@ -119,6 +136,24 @@ class OrderService {
         // console.log("bestBid", bestBid);
         // console.log("bestAsk", bestAsk);
 
+        return { bids: bestBid, asks: bestAsk };
+    }
+
+    private getBestOrderFromStreamData(data: string) {
+        // dataObj = { "u": 6228224033, "s": "ETHBTC", "b": "0.07477300", "B": "19.49680000", "a": "0.07477400", "A": "7.02420000" }
+        const dataObj = JSON.parse(data);
+        const bestBid: Order = {
+            id: uuidv4(),
+            userId: uuidv4(),
+            price: Number(dataObj.b),
+            size: Number(dataObj.B),
+        };
+        const bestAsk: Order = {
+            id: uuidv4(),
+            userId: uuidv4(),
+            price: Number(dataObj.a),
+            size: Number(dataObj.A),
+        };
         return { bids: bestBid, asks: bestAsk };
     }
 }

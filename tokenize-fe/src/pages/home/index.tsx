@@ -30,7 +30,7 @@ const HomePage = () => {
     useEffect(() => {
         if (socket) {
             socket.on("orders", (data) => {
-                console.log("receive data every 5s", data);
+                console.log("receive data", data);
                 setOrderData(data);
             });
         }
