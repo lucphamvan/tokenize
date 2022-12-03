@@ -1,0 +1,14 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/tokenize-be/node_modules
+/tokenize-be/dist
+/tokenize-be/package-lock.json
+/tokenize-be/yarn.lock
+/tokenize-be/.vscode
+
+/tokenize-fe/node_modules
+/tokenize-fe/build
+/tokenize-fe/package-lock.json
+/tokenize-fe/yarn.lock
+/tokenize-fe/.vscode

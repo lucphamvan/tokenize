@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  tokenize-be:
+    container_name: tokenize-be
+    build: ./tokenize-be
+    volumes:
+      - /usr/src/app
+      - ./data/:/usr/src/app/data
+    ports:
+      - 8080:8080
+    restart: always
+  tokenize-fe:
+    container_name: tokenize-fe
+    build: 
+      dockerfile: Dockerfile
+      context: ./tokenize-fe
+    ports:
+      - 3000:3000
+    restart: always
