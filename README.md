@@ -1,19 +1,3 @@
-### Website URL
-
-https://tokenize.denojs.info/
-
-### API URL
-
-https://api-tokenize.denojs.info/orders
-
-### SOCKET-IO
-
-wss://api-tokenize.denojs.info/socket.io/?EIO=4&transport=websocket
-
-### CONFIG API_URL IN TOKENIZE-FE
-
-src/config/api.tsx
-
 ### RUN WITH DOCKER-COMPOSE
 
 ### Note
